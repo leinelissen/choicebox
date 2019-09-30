@@ -28,10 +28,20 @@ trait DeviceAuthTrait {
     /**
      * Get the unique identifier for the device.
      *
-     * @return mixed
+     * @return string
      */
     public function getAuthIdentifier()
     {
         return $this->attributes['key'];
+    }
+
+    /**
+     * Get the name of the unique identifier for the device
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'key';
     }
 }
