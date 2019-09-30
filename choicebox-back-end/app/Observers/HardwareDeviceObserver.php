@@ -15,7 +15,6 @@ class HardwareDeviceObserver
      */
     public function creating(HardwareDevice $hardwareDevice)
     {
-        echo "HARDWARE_DEVICE";
         $hardwareDevice->key = Str::uuid();
         $hardwareDevice->secret = Str::random(64);
     }

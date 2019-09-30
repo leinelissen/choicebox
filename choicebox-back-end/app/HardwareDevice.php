@@ -2,12 +2,14 @@
 
 namespace App;
 
-use App\Events\HardwareDeviceCreating;
+use App\Traits\DeviceAuthTrait;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Laravel\Passport\HasApiTokens;
 
 class HardwareDevice extends Model
 {
+    use HasApiTokens, DeviceAuthTrait;
+
     /**
      * List the parameters that can be freely filled in the model
      *

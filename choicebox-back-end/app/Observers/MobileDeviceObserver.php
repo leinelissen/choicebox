@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\MobileDevice;
+use Illuminate\Support\Str;
 
 class MobileDeviceObserver
 {
@@ -12,7 +13,7 @@ class MobileDeviceObserver
      * @param  \App\MobileDevice  $mobileDevice
      * @return void
      */
-    public function created(MobileDevice $mobileDevice)
+    public function creating(MobileDevice $mobileDevice)
     {
         $mobileDevice->key = Str::uuid();
         $mobileDevice->secret = Str::random(64);

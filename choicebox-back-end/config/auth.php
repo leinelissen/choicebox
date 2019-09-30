@@ -42,9 +42,18 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
-            'hash' => false,
+            'driver' => 'passport',
+            'provider' => 'mobile',
+        ],
+
+        'api:mobile' => [
+            'driver' => 'passport',
+            'provider' => 'mobile',
+        ],
+
+        'api:hardware' => [
+            'driver' => 'passport',
+            'provider' => 'hardware',
         ],
     ],
 
@@ -69,6 +78,14 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
+        ],
+        'hardware' => [
+            'driver' => 'eloquent',
+            'model' => App\HardwareDevice::class,
+        ],
+        'mobile' => [
+            'driver' => 'eloquent',
+            'model' => App\MobileDevice::class,
         ],
 
         // 'users' => [

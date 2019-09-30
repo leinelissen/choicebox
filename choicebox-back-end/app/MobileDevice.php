@@ -2,11 +2,14 @@
 
 namespace App;
 
-use App\Events\MobileDeviceCreating;
+use App\Traits\DeviceAuthTrait;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\HasApiTokens;
 
 class MobileDevice extends Model
 {
+    use HasApiTokens, DeviceAuthTrait;
+
     /**
      * The constant that are available for the type field
      *
