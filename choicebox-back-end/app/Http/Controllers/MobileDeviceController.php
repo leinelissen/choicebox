@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\HardwareDevice;
 use App\MobileDevice;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class MobileDeviceController extends Controller
 {
@@ -35,7 +38,44 @@ class MobileDeviceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate data
+        $data = $request->validate([
+            'hardware_key' => 'required|string|min:16|max:200',
+            'type' => [
+                'required',
+                Rule::in([
+                    MobileDevice::$types_ios,
+                    MobileDevice::$types_android,
+                ]),
+            ],
+            'expo_token' => 'required|string|min:16|max:200',
+        ]);
+
+        // Retrieve the hardware device that was referenced to
+        $hardwareDevice = HardwareDevice::where('key', $data['hardware_key'])
+            ->with('deployment')
+            ->first();
+            
+        // GUARD: Device must exist
+        if (is_null($hardwareDevice)) {
+            throw new Exception('The hardware device key does not exist');
+        }
+
+        // GUARD: Device must have an deployment
+        $deployment = $hardwareDevice->deployment;
+        if (is_null($deployment)) {
+            throw new Exception('The hardware device has no linked deployment');
+        }
+
+        // GUARD: Deployment must be currently active
+        if (!$deployment->isCurrentlyActive()) {
+            throw new Exception('This deployment is not active at this moment');
+        }
+
+        // Create mobile device and relationship to deployment
+        $mobileDevice = $deployment->mobileDevice()->create($data);
+
+        return $mobileDevice;
     }
 
     /**

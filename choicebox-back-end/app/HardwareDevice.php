@@ -26,6 +26,6 @@ class HardwareDevice extends Model
      */
     public function deployment()
     {
-        return $this->belongsTo(Deployment::class);
+        return $this->hasOne(Deployment::class);
     }
 }

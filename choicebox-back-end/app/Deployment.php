@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Deployment extends Model
@@ -34,7 +35,7 @@ class Deployment extends Model
      */
     public function hardwareDevice()
     {
-        return $this->hasOne(HardwareDevice::class);
+        return $this->belongsTo(HardwareDevice::class);
     }
 
     /**
@@ -44,7 +45,7 @@ class Deployment extends Model
      */
     public function mobileDevice()
     {
-        return $this->hasOne(MobileDevice::class);
+        return $this->belongsTo(MobileDevice::class);
     }
 
     /**
@@ -65,5 +66,16 @@ class Deployment extends Model
     public function interventions()
     {
         return $this->hasMany(Intervention::class);
+    }
+
+    /**
+     * Utility function to determine whether this deployment is currently active
+     *
+     * @return boolean
+     */
+    public function isCurrentlyActive()
+    {
+        return $this->deployment_start >= Carbon::now()
+            && $this->deployment_end >= Carbon::now();
     }
 }

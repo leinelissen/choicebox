@@ -15,10 +15,8 @@ class MobileDevice extends Model
      *
      * @var array
      */
-    public $types = [
-        'ios' => 'IOS',
-        'android' => 'ANDROID',
-    ];
+    static public $types_ios = 'IOS';
+    static public $types_android = 'ANDROID';
 
     /**
      * List the parameters that can be freely filled in the model
@@ -37,6 +35,6 @@ class MobileDevice extends Model
      */
     public function deployment()
     {
-        return $this->belongsTo(Deployment::class);
+        return $this->hasOne(Deployment::class);
     }
 }
