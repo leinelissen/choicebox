@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 class Interaction extends Model
@@ -11,10 +12,8 @@ class Interaction extends Model
      *
      * @var array
      */
-    public $types = [
-        'hardware' => 'TYPE_HARDWARE',
-        'mobile' => 'TYPE_MOBILE',
-    ];
+    public static $type_hardware = 'HARDWARE';
+    public static $type_mobile = 'MOBILE';
 
     /**
      * The attributes of the model that can be freely edited
@@ -22,8 +21,8 @@ class Interaction extends Model
      * @var array
      */
     protected $fillable = [
-        'type',
-        'data'
+        'data',
+        'type'
     ];
 
     /**
@@ -43,5 +42,22 @@ class Interaction extends Model
     public function deployment()
     {
         return $this->belongsTo(Deployment::class);
+    }
+
+    /**
+     * Map a model's class to a type for the interaction
+     *
+     * @param any $model
+     * @return string
+     */
+    public static function mapClassToType($model)
+    {
+        if ($model instanceof MobileDevice) {
+            return Interaction::$type_mobile;
+        } else if ($model instanceof HardwareDevice) {
+            return Interaction::$type_hardware;
+        }
+        
+        throw new Exception ('Authenticated device cannot be mapped to interaction type');
     }
 }

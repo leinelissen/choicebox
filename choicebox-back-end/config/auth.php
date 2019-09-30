@@ -46,12 +46,12 @@ return [
             'provider' => 'mobile',
         ],
 
-        'api:mobile' => [
+        'mobile' => [
             'driver' => 'passport',
             'provider' => 'mobile',
         ],
 
-        'api:hardware' => [
+        'hardware' => [
             'driver' => 'passport',
             'provider' => 'hardware',
         ],

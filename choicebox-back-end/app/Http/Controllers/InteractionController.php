@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Interaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InteractionController extends Controller
 {
@@ -35,7 +37,32 @@ class InteractionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->input('data');
+
+        // Retrieve the device that is submitting the data
+        // NOTE: This is either a MobileDevice or HardwareDevice
+        $device = Auth::user()->load('deployment');
+
+        // GUARD: Device must have a linked deployment
+        $deployment = $device->deployment;
+        if (is_null($deployment)) {
+            throw new Exception('No deployment is associated with the currently authenticated device');
+        }
+
+        // GUARD: Deployment must be active
+        if (!$deployment->isCurrentlyActive()) {
+            throw new Exception('Deployment is currently not active');
+        }
+
+        // Create interaction
+        $deployment->interactions()->create([
+            'data' => $data,
+            'type' => Interaction::mapClassToType($device),
+        ]);
+
+        return [
+            'success' => true
+        ];
     }
 
     /**

@@ -13,17 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+/**======================================================
+ * Unauthenticated Routes
+ =======================================================*/
+
+Route::put('mobile/register', 'MobileDeviceController@store');
 
 /**======================================================
  * Mobile Device Routes
  =======================================================*/
 
-Route::put('mobile/register', 'MobileDeviceController@store');
-
-Route::prefix('mobile')->middleware('auth:api:mobile')->group(function () {
+Route::prefix('mobile')->middleware('auth:mobile')->group(function () {
     Route::get('/', function() {
         return 'HELLO!';
     });
@@ -32,6 +32,13 @@ Route::prefix('mobile')->middleware('auth:api:mobile')->group(function () {
 /**======================================================
  * Hardware Device Routes
  =======================================================*/
-Route::prefix('hardware')->middleware('auth:api:hardware')->group(function () {
+Route::prefix('hardware')->middleware('auth:hardware')->group(function () {
 
+});
+
+/**======================================================
+ * All-device Routes
+ =======================================================*/
+Route::prefix('device')->middleware('auth:hardware,mobile')->group(function () {
+    Route::put('interactions', 'InteractionController@store');
 });
