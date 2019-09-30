@@ -6,6 +6,7 @@ use Exception;
 use App\HardwareDevice;
 use App\MobileDevice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class MobileDeviceController extends Controller
@@ -55,7 +56,7 @@ class MobileDeviceController extends Controller
         $hardwareDevice = HardwareDevice::where('key', $data['hardware_key'])
             ->with('deployment')
             ->first();
-            
+
         // GUARD: Device must exist
         if (is_null($hardwareDevice)) {
             throw new Exception('The hardware device key does not exist');
@@ -73,7 +74,14 @@ class MobileDeviceController extends Controller
         }
 
         // Create mobile device and relationship to deployment
-        $mobileDevice = $deployment->mobileDevice()->create($data);
+        $mobileDevice = MobileDevice::create($data);
+        $deployment->mobileDevice()->associate($mobileDevice);
+        $deployment->save();
+
+        // Log the action so we can trace the linking process
+        $mobileDevice->makeHidden('secret');
+        Log::info("Linked new mobile device to a deployment", ["mobileDevice" => $mobileDevice, "deployment" => $deployment]);
+        $mobileDevice->makeVisible('secret');
 
         return $mobileDevice;
     }
