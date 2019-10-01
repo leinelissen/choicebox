@@ -21,6 +21,15 @@ class HardwareDevice extends Model
     ];
 
     /**
+     * List the attributes that should be hidden when serialising
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'secret'
+    ];
+
+    /**
      * Return the the channel on which events for this device should be broacast
      *
      * @return string

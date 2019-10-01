@@ -17,11 +17,29 @@ class Intervention extends Model
     ];
 
     /**
+     * The attributes that should be visible when serialising the object
+     *
+     * @var array
+     */
+    protected $visible = [
+        'id',
+        'title',
+        'message',
+        'parameters',
+        'scheduled_for_dispatch_at',
+        'dispatched_at',
+        'responded_at',
+        'accepted_intervention',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
      * The attributes that can be freely assigned to the model
      *
      * @var array
      */
-    public $fillable = [
+    protected $fillable = [
         'title',
         'message',
         'parameters',

@@ -79,8 +79,10 @@ class MobileDeviceController extends Controller
         $deployment->save();
 
         // Log the action so we can trace the linking process
-        $mobileDevice->makeHidden('secret');
         Log::info("Linked new mobile device to a deployment", ["mobileDevice" => $mobileDevice, "deployment" => $deployment]);
+        
+        // Make the mobileDevice secret visible for once so that the mobile
+        // device can use it to initialise
         $mobileDevice->makeVisible('secret');
 
         return $mobileDevice;

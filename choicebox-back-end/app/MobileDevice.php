@@ -30,6 +30,15 @@ class MobileDevice extends Model
     ];
 
     /**
+     * List the attributes that should be hidden when serialising
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'secret'
+    ];
+
+    /**
      * Retrieve the deployment associated with this device
      *
      * @return void
