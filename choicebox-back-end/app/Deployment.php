@@ -75,7 +75,7 @@ class Deployment extends Model
      */
     public function isCurrentlyActive()
     {
-        return $this->deployment_start >= Carbon::now()
+        return $this->deployment_start <= Carbon::now()
             && $this->deployment_end >= Carbon::now();
     }
 }

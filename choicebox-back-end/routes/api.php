@@ -24,9 +24,9 @@ Route::put('mobile/register', 'MobileDeviceController@store');
  =======================================================*/
 
 Route::prefix('mobile')->middleware('auth:mobile')->group(function () {
-    Route::get('/', function() {
-        return 'HELLO!';
-    });
+    // Interventions
+    Route::get('interventions', 'InterventionController@index');
+    Route::get('interventions/unanswered', 'InterventionController@unanswered');
 });
 
 /**======================================================
