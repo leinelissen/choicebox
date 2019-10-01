@@ -4,11 +4,12 @@ namespace App;
 
 use App\Traits\DeviceAuthTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class HardwareDevice extends Model
 {
-    use HasApiTokens, DeviceAuthTrait;
+    use HasApiTokens, DeviceAuthTrait, Notifiable;
 
     /**
      * List the parameters that can be freely filled in the model
@@ -18,6 +19,16 @@ class HardwareDevice extends Model
     protected $fillable = [
         //
     ];
+
+    /**
+     * Return the the channel on which events for this device should be broacast
+     *
+     * @return string
+     */
+    public function receivesBroadcastNotificationsOn()
+    {
+        return 'HardwareDevice.' . $this->attributes['key'];
+    }
 
     /**
      * Retrieve the deployment associated with this device
