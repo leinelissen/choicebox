@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Intervention;
+use App\Policies\DeploymentPolicy;
+use App\Policies\InterventionPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -15,7 +18,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
+        Intervention::class => InterventionPolicy::class,
+        Deployment::class => DeploymentPolicy::class,
     ];
 
     /**

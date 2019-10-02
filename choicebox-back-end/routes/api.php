@@ -27,6 +27,7 @@ Route::prefix('mobile')->middleware('auth:mobile')->group(function () {
     // Interventions
     Route::get('interventions', 'InterventionController@index');
     Route::get('interventions/unanswered', 'InterventionController@unanswered');
+    Route::post('interventions/{intervention}/respond', 'InterventionController@respond');
 });
 
 /**======================================================

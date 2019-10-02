@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Intervention;
+use App\Deployment;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,22 +18,13 @@ class InterventionController extends Controller
      */
     public function index()
     {
+        $this->authorize('isActive', Deployment::class);
+
         $device = Auth::user()->load(['deployment', 'deployment.interventions' => function ($query) {
             $query->whereNotNull('interventions.dispatched_at');
         }]);
 
-        // GUARD: Device must have an deployment
-        $deployment = $device->deployment;
-        if (is_null($deployment)) {
-            throw new Exception('The hardware device has no linked deployment');
-        }
-
-        // GUARD: Deployment must be currently active
-        if (!$deployment->isCurrentlyActive()) {
-            throw new Exception('This deployment is not active at this moment');
-        }
-
-        return $deployment->interventions;
+        return $device->deployment->interventions;
     }
 
     /**
@@ -41,21 +34,12 @@ class InterventionController extends Controller
      */
     public function unanswered()
     {
+        $this->authorize('isActive', Deployment::class);
+
         $device = Auth::user()->load(['deployment.interventions' => function ($query) {
             $query->whereNotNull('interventions.dispatched_at')
                 ->whereNull('interventions.responded_at');
         }]);
-
-        // GUARD: Device must have an deployment
-        $deployment = $device->deployment;
-        if (is_null($deployment)) {
-            throw new Exception('The hardware device has no linked deployment');
-        }
-
-        // GUARD: Deployment must be currently active
-        if (!$deployment->isCurrentlyActive()) {
-            throw new Exception('This deployment is not active at this moment');
-        }
 
         return $device->deployment->interventions;
     }
@@ -72,37 +56,31 @@ class InterventionController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Intervention  $intervention
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Intervention $intervention)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Intervention  $intervention
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Intervention $intervention)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Intervention  $intervention
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Intervention $intervention)
+    public function respond(Request $request, Intervention $intervention)
     {
-        //
+        $this->authorize('isActive', Deployment::class);
+        $this->authorize('respond', $intervention);
+
+        $data = $request->validate([
+            'accepted_intervention' => 'required|boolean'
+        ]);
+
+        // GUARD: Deployment must be currently active
+        if (!$intervention->deployment->isCurrentlyActive()) {
+            throw new Exception('This deployment is not active at this moment');
+        }
+
+        // Modify the intervention with the new response
+        $intervention->responded_at = Carbon::now();
+        $intervention->accepted_intervention = (boolean) $data['accepted_intervention'];
+
+        return $intervention;
     }
 
     /**

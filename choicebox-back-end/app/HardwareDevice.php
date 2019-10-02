@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class HardwareDevice extends Model
+class HardwareDevice extends Model implements DeviceInterface
 {
     use HasApiTokens, DeviceAuthTrait, Notifiable;
 
@@ -27,6 +27,15 @@ class HardwareDevice extends Model
      */
     protected $hidden = [
         'secret'
+    ];
+
+    /**
+     * List the relationships that should always be loaded by default for this model
+     *
+     * @var array
+     */
+    protected $with = [
+        'deployment'
     ];
 
     /**
