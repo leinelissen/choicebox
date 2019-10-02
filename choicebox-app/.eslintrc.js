@@ -10,6 +10,7 @@ module.exports = {
     globals: {
         Atomics: 'readonly',
         SharedArrayBuffer: 'readonly',
+        fetch: 'readonly',
     },
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -48,6 +49,10 @@ module.exports = {
         }],
         'react/jsx-indent': [1, 4],
         'react/prefer-stateless-function': [0],
+        'react/state-in-constructor': [1, 'never'],
+        'react/destructuring-assignment': [0],
+        'react/jsx-indent-props': [1, 4],
+        'no-else-return': [2, { allowElseIf: true }],
     },
     'settings': {
         'import/resolver': {

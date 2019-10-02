@@ -1,43 +1,46 @@
 import React, { Component, ReactNode } from 'react';
 import { Provider } from 'react-redux';
-import * as Font from 'expo-font';
+import { loadAsync as LoadFontsAsync } from 'expo-font';
 
 import initializeStore from 'store';
-// import GlobalStyles from 'styles/global';
 import Navigator from 'screens';
 import Setup from 'screens/Setup';
 
 const store = initializeStore();
 
 interface State {
-    isFontLoaded: boolean;
+    areFontsLoaded: boolean;
 }
 
 class App extends Component<{}, State> {
     state = {
-        isFontLoaded: false,
+        // Whether all fonts have been loaded yet
+        areFontsLoaded: false,
     };
 
     componentDidMount(): void {
-        Font.loadAsync({
+        // Load the fonts
+        LoadFontsAsync({
+            // eslint-disable-next-line global-require
             'IBMPlexSans-Light': require('../../../assets/fonts/IBMPlexSans-Light.otf'),
-        }).then(() => this.setState({ isFontLoaded: true }));
+            // eslint-disable-next-line global-require
+            'IBMPlexSans-Regular': require('../../../assets/fonts/IBMPlexSans-Regular.otf'),
+            // eslint-disable-next-line global-require
+            'IBMPlexSans-SemiBold': require('../../../assets/fonts/IBMPlexSans-SemiBold.otf'),
+        }).then(() => this.setState({ areFontsLoaded: true }));
     }
 
     public render(): ReactNode {
-        const { isFontLoaded } = this.state;
+        const { areFontsLoaded } = this.state;
         const { device: { isInitialised } } = store.getState();
 
-        if (!isFontLoaded) {
+        if (!areFontsLoaded) {
             return null;
         }
 
         return (
             <Provider store={store}>
-                <>
-                    {/* <GlobalStyles /> */}
-                    {isInitialised ? <Navigator /> : <Setup />}
-                </>
+                {isInitialised ? <Navigator /> : <Setup />}
             </Provider>
         );
     }

@@ -7,13 +7,17 @@
         "noEmit": true,
         "skipLibCheck": true,
         "resolveJsonModule": true,
-        "baseUrl": "./",
+        "baseUrl": ".",
+        "isolatedModules": true,
         "paths": {
-            "store": [ "./src/store" ],
-            "components": [ "./src/components" ],
-            "lib": [ "./src/lib" ],
-            "styles": [ "./src/styles" ],
-            "screens": [ "./src/screens" ]
+            "store/*": [ "src/store/*" ],
+            "components/*": [ "src/components/*" ],
+            "styles/*": [ "src/styles/*" ],
+            "screens/*": [ "src/screens/*" ],
+            "utilities/*": [ "src/utilities/*" ],
+            "store": [ "src/store" ],
+            "styles": [ "src/styles" ],
+            "screens": [ "src/screens" ]
         }
     }
 }

@@ -4,8 +4,8 @@ export enum DeviceType {
 }
 
 export enum DeviceActions {
-    getExpoToken = 'DEVICE_GET_EXPO_TOKEN',
     register = 'DEVICE_REGISTER',
+    setDevice = 'DEVICE_SET',
     getAccessToken = 'DEVICE_GET_ACCESS_TOKEN'
 }
 
@@ -27,4 +27,9 @@ export interface DeviceState {
     token?: Token;
     isInitialised: boolean;
     isTourComplete: boolean;
+}
+
+export interface DeviceSetAction {
+    type: DeviceActions.setDevice;
+    payload: Device;
 }

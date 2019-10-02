@@ -12,9 +12,8 @@ export const theme = {
         grey: {
             extremelyLight: '#FAFAFA',
             veryLight: '#EFEFEF',
-            light: '#DBDBDB',
-            medium: '#CECECE',
-            dark: '#6F6F6F',
+            light: '#9F9F9F',
+            dark: '#606060',
             veryDark: '#808080',
         },
         blue: '#0099ff',

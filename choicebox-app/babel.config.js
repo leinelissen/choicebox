@@ -22,6 +22,7 @@ module.exports = function (api) {
                         store: path.resolve(__dirname, 'src', 'store'),
                         lib: path.resolve(__dirname, 'src', 'lib'),
                         styles: path.resolve(__dirname, 'src', 'styles'),
+                        utilities: path.resolve(__dirname, 'src', 'utilities'),
                     },
                 },
             ],
