@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Deployment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DeploymentController extends Controller
 {
@@ -14,7 +15,7 @@ class DeploymentController extends Controller
      */
     public function index()
     {
-        //
+        return Auth::user()->deployment;
     }
 
     /**

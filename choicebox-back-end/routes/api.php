@@ -42,4 +42,5 @@ Route::prefix('hardware')->middleware('auth:hardware')->group(function () {
  =======================================================*/
 Route::prefix('device')->middleware('auth:hardware,mobile')->group(function () {
     Route::put('interactions', 'InteractionController@store');
+    Route::get('deployment', 'DeploymentController@index');
 });

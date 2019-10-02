@@ -10,9 +10,10 @@ const { parsed : {
 
 const fetch = require('node-fetch');
 const Pusher = require('pusher-js');
+const Echo = require('laravel-echo');
 
 // Flag for debugging the Pusher SDK
-Pusher.log = console.log;
+// Pusher.log = console.log;
 
 /**
  * Retrieve Access Token
@@ -57,6 +58,17 @@ const accessTokenRequest = fetch(`${AUTH_HOST}/oauth/token`, {
 
         return response.access_token;
     })
+    .then(accessToken => {
+        const request = fetch(`${AUTH_HOST}/api/device/deployment`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }, 
+        }).then(response => response.json());
+
+        return Promise.all([request, accessToken]);
+    })
     .catch(err => {
         console.error('[ERROR] ', err.message);
         process.exit(0);
@@ -73,8 +85,8 @@ const accessTokenRequest = fetch(`${AUTH_HOST}/oauth/token`, {
  */
 
 const socketConnection = accessTokenRequest
-    .then(accessToken => {
-        console.log(accessToken);
+    .then(([deployment, accessToken]) => {
+        // console.log(deployment, accessToken);
         // Create a socket using the following config
         const socket = new Pusher(APP_KEY, {
             wsHost: WS_HOST,
@@ -95,18 +107,19 @@ const socketConnection = accessTokenRequest
             },
         });
 
-        // Bind errors and state changes, and log them to console
-        socket.connection.bind('error', (message) => console.error('[ERROR] ', message));
-        socket.connection.bind('state_change', (message) => console.log('[STATE CHANGE] ', message));
-
-        // Also bind a handler for when the socket is connected to the server
-        socket.connection.bind('connected', () => {
-            // Then subscribe to the private channel for the hardware device
-            const channel = socket.subscribe(`private-HardwareDevice.${HARDWARE_DEVICE_KEY}`);
-            
-            // And bind the handler for any received messages
-            channel.bind('new-message', (message) => console.log('[NEW MESSAGE] ', message));
+        const echo = new Echo({ 
+            broadcaster: 'pusher',
+            key: APP_KEY,
+            client: socket,
         });
+
+        echo.private(`HardwareDevice.${HARDWARE_DEVICE_KEY}`)
+            .listen('NewAccessRequest', console.log);
+
+        // Join a deployment channel, so that devices can know eachothers online
+        // status. This is particularly used in the setup process.
+        echo.join(`Deployment.${deployment.id}`)
+            .here(members => console.log('[MEMBERS] ', members));
 
         return socket;
     });
