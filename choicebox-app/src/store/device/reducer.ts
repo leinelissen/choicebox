@@ -20,6 +20,11 @@ function reducer(state: DeviceState = initialState, action): DeviceState {
                 ...state,
                 device: action.payload,
             };
+        case DeviceActions.setAccessToken:
+            return {
+                ...state,
+                token: action.payload,
+            };
         default:
             return state;
     }

@@ -11,6 +11,7 @@ import { Paragraph, Heading } from 'components/Typography/Overlay';
 interface State {
     // Whether there is permission for using the camera
     hasCameraPermission?: boolean;
+    hasScanned: boolean;
 }
 
 const QRImage = styled.Image`
@@ -22,6 +23,7 @@ const QRImage = styled.Image`
 class Scan extends Component<NavigationInjectedProps, State> {
     state = {
         hasCameraPermission: null,
+        hasScanned: false,
     }
 
     /**
@@ -30,7 +32,14 @@ class Scan extends Component<NavigationInjectedProps, State> {
      * next scren.
      */
     handleBarCodeScanned = ({ data }): void => {
+        const { hasScanned } = this.state;
         const [identifier, key] = data.split(',');
+
+        // Reject any additional callbacks whenever something has been
+        // successfully scanned.
+        if (hasScanned) {
+            return;
+        }
 
         if (identifier !== 'choicebox') {
             console.log(`[SCANNER] Rejecing QR-code, missing identifier. ("${data}")`);
@@ -39,6 +48,7 @@ class Scan extends Component<NavigationInjectedProps, State> {
 
         console.log(`[SCANNER] Accepted QR-code. ("${data}")`);
         this.props.navigation.navigate('Register', { key });
+        this.setState({ hasScanned: true });
     }
 
     /**

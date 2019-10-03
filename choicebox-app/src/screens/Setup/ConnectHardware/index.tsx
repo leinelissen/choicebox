@@ -5,10 +5,10 @@ import { NavigationInjectedProps } from 'react-navigation';
 import CenteredScreen from 'components/CenteredScreen';
 import { Paragraph, Heading } from 'components/Typography/Overlay';
 import { State as ApplicationState } from 'store/reducers';
-import { Device } from 'store/device/types';
 
 interface StateProps {
-    device: Device;
+    accessToken: string;
+    deploymentId: number;
 }
 
 class ConnectHardware extends Component<NavigationInjectedProps & StateProps> {
@@ -16,7 +16,7 @@ class ConnectHardware extends Component<NavigationInjectedProps & StateProps> {
         // TODO: Use this.props.device and Laravel Echo to connect to the
         // deployment's presence channel, so that we can wait for the hardware
         // device to come online.
-        console.log(this.props.device);
+        console.log(this.props.accessToken, this.props.deploymentId);
     }
 
     public render(): ReactNode {
@@ -31,7 +31,9 @@ class ConnectHardware extends Component<NavigationInjectedProps & StateProps> {
 }
 
 const mapStateToProps = (state: ApplicationState): StateProps => ({
-    device: state.device.device,
+    accessToken: state.device.token.access_token,
+    deploymentId: state.deployment.id,
+
 });
 
 export default connect(mapStateToProps)(ConnectHardware);

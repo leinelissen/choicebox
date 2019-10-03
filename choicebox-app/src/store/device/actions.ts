@@ -4,13 +4,63 @@ import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { askAsync as AskPermissionsAsync, NOTIFICATIONS } from 'expo-permissions';
 import { Notifications } from 'expo';
-import { BACKEND_HOST } from 'utilities/env';
-import { Device, DeviceSetAction, DeviceActions } from './types';
+import { BACKEND_HOST, CLIENT_ID, CLIENT_SECRET } from 'utilities/env';
+import { Device, DeviceSetAction, DeviceActions, Token, DeviceSetAccessTokenAction } from './types';
+import { State } from 'store/reducers';
+
+/**
+ * Save a retrieved access token to Redux
+ */
+function setAccessToken(payload: Token): DeviceSetAccessTokenAction {
+    console.log('[REDUCER] Saving new access token.');
+    
+    return {
+        type: DeviceActions.setAccessToken,
+        payload,
+    };
+}
+
+/**
+ * Retrieve a new access token from the back-end
+ */
+export function getAccessToken():
+ThunkAction<void, {}, {}, AnyAction> {
+    return (dispatch: ThunkDispatch<{}, {}, AnyAction>, getState: () => State): void => {
+        // Retrieve key and secret from Redux, so that we can trade it in for an
+        // access token.
+        const { key, secret } = getState().device.device;
+
+        // Construct requests
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                grant_type: 'password',
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET,
+                username: key,
+                password: secret,
+                scope: '*',
+                provider: 'mobile',
+            }),
+        };
+
+        fetch(`${BACKEND_HOST}/oauth/token`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                // Save access token to store
+                dispatch(setAccessToken(response));
+            });
+    };
+}
 
 /**
  * Save the result from a registration call in Redux
  */
-export function setDevice(payload: Device): DeviceSetAction {
+function setDevice(payload: Device): DeviceSetAction {
     return {
         type: DeviceActions.setDevice,
         payload,
@@ -68,6 +118,7 @@ export function registerMobileDevice(hardwareKey: string):
 
                 // If the request is successful, set the device in Redux
                 dispatch(setDevice(response));
+                return dispatch(getAccessToken());
             });
     };
 }
