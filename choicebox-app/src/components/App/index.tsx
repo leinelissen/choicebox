@@ -2,11 +2,10 @@ import React, { Component, ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { loadAsync as LoadFontsAsync } from 'expo-font';
 
-import initializeStore from 'store';
+import { store, persistor } from 'store';
 import Navigator from 'screens';
 import Setup from 'screens/Setup';
-
-const store = initializeStore();
+import { PersistGate } from 'redux-persist/integration/react';
 
 interface State {
     areFontsLoaded: boolean;
@@ -40,7 +39,9 @@ class App extends Component<{}, State> {
 
         return (
             <Provider store={store}>
-                {isInitialised ? <Navigator /> : <Setup />}
+                <PersistGate persistor={persistor}>
+                    {isInitialised ? <Navigator /> : <Setup />}
+                </PersistGate>
             </Provider>
         );
     }
