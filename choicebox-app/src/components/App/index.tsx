@@ -6,6 +6,7 @@ import { store, persistor } from 'store';
 import Navigator from 'screens';
 import Setup from 'screens/Setup';
 import { PersistGate } from 'redux-persist/integration/react';
+import Tour from 'screens/Requests/Tour';
 
 interface State {
     areFontsLoaded: boolean;
@@ -31,7 +32,7 @@ class App extends Component<{}, State> {
 
     public render(): ReactNode {
         const { areFontsLoaded } = this.state;
-        const { device: { isInitialised } } = store.getState();
+        const { setup: { isRegistrationComplete, isTourComplete } } = store.getState();
 
         if (!areFontsLoaded) {
             return null;
@@ -40,7 +41,7 @@ class App extends Component<{}, State> {
         return (
             <Provider store={store}>
                 <PersistGate persistor={persistor}>
-                    {isInitialised ? <Navigator /> : <Setup />}
+                    <Navigator />
                 </PersistGate>
             </Provider>
         );

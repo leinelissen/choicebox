@@ -19,7 +19,7 @@ Broadcast::channel('HardwareDevice.{key}', function ($device, $key) {
 });
 
 // Presence channel for checking whether devices are online in a deployment
-Broadcast::channel('Deployment.{id}', function ($device, $id) {
+Broadcast::channel('Deployment.{deployment}', function ($device, $id) {
     return (int) $device->deployment->id === (int) $id
         ? [
             'id' => $device->id,

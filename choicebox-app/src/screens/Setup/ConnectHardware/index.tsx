@@ -27,7 +27,8 @@ class ConnectHardware extends Component<NavigationInjectedProps & StateProps> {
     componentDidMount(): void {
         const { accessToken, deploymentId } = this.props;
 
-        Pusher.log = console.log;
+        // Required for debugging the Pusher connection
+        // Pusher.log = console.log;
 
         // Create a socket using the following config
         this.pusherSocket = new Pusher(PUSHER_KEY, {
@@ -54,6 +55,13 @@ class ConnectHardware extends Component<NavigationInjectedProps & StateProps> {
         // Join the deployment channel to see who is online
         this.echo.join(`Deployment.${deploymentId}`)
             .here((members) => members.forEach(this.handleNewPresenceMember));
+    }
+
+    /**
+     * Clean up after the component is destined for destruction
+     */
+    componentWillUnmount(): void {
+        this.pusherSocket.disconnect();
     }
 
     /**

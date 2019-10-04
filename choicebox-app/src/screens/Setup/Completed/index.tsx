@@ -1,13 +1,18 @@
 import React, { Component, ReactNode } from 'react';
 import { Button } from 'react-native';
+import { connect } from 'react-redux';
 
 import CenteredScreen from 'components/CenteredScreen';
 import { Paragraph, Heading } from 'components/Typography/Overlay';
-import { NavigationInjectedProps } from 'react-navigation';
+import { registrationIsComplete } from 'store/setup/actions';
 
-class Completed extends Component<NavigationInjectedProps> {
+interface Props {
+    registrationIsComplete: typeof registrationIsComplete;
+}
+
+class Completed extends Component<Props> {
     handlePress = (): void => {
-        // this.props.navigation.navigate('Scan');
+        this.props.registrationIsComplete();
     }
 
     public render(): ReactNode {
@@ -23,4 +28,8 @@ class Completed extends Component<NavigationInjectedProps> {
     }
 }
 
-export default Completed;
+const mapDispatchToProps = {
+    registrationIsComplete,
+};
+
+export default connect(null, mapDispatchToProps)(Completed);

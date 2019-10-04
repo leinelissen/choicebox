@@ -26,8 +26,6 @@ export interface DeviceState {
     device?: Device;
     expo_token?: string;
     token?: Token;
-    isInitialised: boolean;
-    isTourComplete: boolean;
 }
 
 export interface DeviceSetAction {
