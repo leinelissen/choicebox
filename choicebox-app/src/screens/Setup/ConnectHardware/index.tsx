@@ -1,10 +1,13 @@
 import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { NavigationInjectedProps } from 'react-navigation';
+import Pusher from 'pusher-js/react-native';
+import Echo from 'laravel-echo';
 
 import CenteredScreen from 'components/CenteredScreen';
 import { Paragraph, Heading } from 'components/Typography/Overlay';
 import { State as ApplicationState } from 'store/reducers';
+import { BACKEND_HOST, PUSHER_KEY, WS_HOST } from 'utilities/env';
 
 interface StateProps {
     accessToken: string;
@@ -12,11 +15,55 @@ interface StateProps {
 }
 
 class ConnectHardware extends Component<NavigationInjectedProps & StateProps> {
+    // This will store the Pusher client
+    pusherSocket = null;
+
+    // This will store the Laravel Echo interface to the Pusher client
+    echo = null;
+
+    /**
+     * Setup the socket connection to the back-end
+     */
     componentDidMount(): void {
-        // TODO: Use this.props.device and Laravel Echo to connect to the
-        // deployment's presence channel, so that we can wait for the hardware
-        // device to come online.
-        console.log(this.props.accessToken, this.props.deploymentId);
+        const { accessToken, deploymentId } = this.props;
+
+        Pusher.log = console.log;
+
+        // Create a socket using the following config
+        this.pusherSocket = new Pusher(PUSHER_KEY, {
+            wsHost: WS_HOST,
+            wsPort: 6001,
+            authEndpoint: `${BACKEND_HOST}/broadcasting/auth`,
+            auth: {
+                headers: {
+                    // Set the Authorization header so that the device is
+                    // recognised as trying to access the private channel
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            },
+        });
+
+        // Register the Echo interface
+        this.echo = new Echo({
+            broadcaster: 'pusher',
+            key: PUSHER_KEY,
+            client: this.pusherSocket,
+        });
+
+        // Join the deployment channel to see who is online
+        this.echo.join(`Deployment.${deploymentId}`)
+            .here((members) => members.forEach(this.handleNewPresenceMember));
+    }
+
+    /**
+     * Handle whenever a new person gets added to the presence channel on the
+     * socket connection.
+     */
+    handleNewPresenceMember = (device): void => {
+        if (device.type === 'HARDWARE') {
+            this.props.navigation.navigate('Completed');
+        }
     }
 
     public render(): ReactNode {
@@ -24,7 +71,7 @@ class ConnectHardware extends Component<NavigationInjectedProps & StateProps> {
             <CenteredScreen>
                 <Heading>Finding ChoiceBox...</Heading>
                 <Paragraph>Your ChoiceBox has been registered. However, you will need to connect it to power, as well as to your home network using the included cables.</Paragraph>
-                <Paragraph>We&apos;ll try and find it in the meantime and let you know as soon.</Paragraph>
+                <Paragraph>We&apos;ll try and find it in the meantime and let you know as soon as possible.</Paragraph>
             </CenteredScreen>
         );
     }
